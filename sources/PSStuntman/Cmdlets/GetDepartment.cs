@@ -22,13 +22,13 @@ namespace PSStuntman.Cmdlets
         )]
         public string Id { get; set; }
 
-        protected override void ProcessRecord()
+        protected async override void ProcessRecord()
         {
             var query = string.IsNullOrEmpty(Id) ? "select * from Departments" : $"select * from Departments where Id = {Id}";
 
             try
             {
-                var departments = _sqliteDataAccessService.ReadFromDatabase<DepartmentModel>(query);
+                var departments = await _sqliteDataAccessService.GetRecordFromDatabase<DepartmentModel>(query).ConfigureAwait(false);
                 if (departments.Count < 1)
                 {
                     WriteWarning($"Unable to obtain department. Make sure the database is not empty and that the department with id '{Id}' exists.");

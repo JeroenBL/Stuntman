@@ -22,13 +22,13 @@ namespace PSStuntman.Cmdlets
         )]
         public string Id { get; set; }
 
-        protected override void ProcessRecord()
+        protected async override void ProcessRecord()
         {
             var query = string.IsNullOrEmpty(Id) ? "select * from Stuntman" : $"select* from Stuntman where Id = {Id}";
 
             try
             {
-                var stuntman = _sqliteDataAccessService.ReadFromDatabase<StuntmanModel>(query);
+                var stuntman =  await _sqliteDataAccessService.GetRecordFromDatabase<StuntmanModel>(query).ConfigureAwait(false);
                 if (stuntman.Count < 1)
                 {
                     WriteWarning($"Unable to obtain stuntman. Make sure the database is not empty and that the stuntman with id '{Id}' exists.");

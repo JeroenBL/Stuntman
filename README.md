@@ -216,11 +216,13 @@ Note that the API uses .NET 5.0.x https://dotnet.microsoft.com/download/dotnet/5
 
 ### Endpoint overview
 
-| Endpoint     | Description                                    |
-| ------------ | ---------------------------------------------- |
-| /            | Root endpoint for the API                      |
-| /stuntman    | Retrieves all the stuntman using a HTTP GET    |
-| /departments | Retrieves all the departments using a HTTP GET |
+| Endpoint         | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| /                | Root endpoint for the API                      |
+| /stuntman        | Retrieves all the stuntman using a HTTP GET    |
+| /stuntman/{id}   | Retrieve stuntman by id                        |
+| /departments     | Retrieves all the departments using a HTTP GET |
+| /department/{id} | Retrieve department by id                      |
 
 ### Usage
 
@@ -238,6 +240,12 @@ Note that the API uses .NET 5.0.x https://dotnet.microsoft.com/download/dotnet/5
 > If you want to change the URL's, type: __StuntmanAPI.exe --urls <http://yourUrl:portnumber>__
 
 ## Release history
+
+### Version 1.0.1 (2021-09-12)
+
+- Added API calls (/stuntman/{id}) and (/departments/{id})
+- Changed sync methods to async
+- Minor changes to method calls to accomodate CRUD
 
 ### Version 1.0.0 (2021-09-09)
 

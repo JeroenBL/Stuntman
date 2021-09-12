@@ -103,7 +103,7 @@ namespace PSStuntman.Cmdlets
             var query = "insert into Stuntman (UserId, ExternalId, GivenName, FamilyName, DisplayName, UserName, Initials, PersonalEmailAddress, PersonalPhoneNumber, BusinessEmailAddress, BusinessPhoneNumber, BirthDate, BirthPlace, Language, City, Street, HouseNumber, ZipCode, IsActive, UserGuid, Title, IsManager, StartDate, EndDate, HoursPerWeek, Company, Department, DepartmentExternalId, CostCenter, ContractGuid) " +
             "values (@UserId, @ExternalId, @GivenName, @FamilyName, @DisplayName, @UserName, @Initials, @PersonalEmailAddress, @PersonalPhoneNumber, @BusinessEmailAddress, @BusinessPhoneNumber, @BirthDate, @BirthPlace, @Language, @City, @Street, @HouseNumber, @ZipCode, @IsActive, @UserGuid, @Title, @IsManager, @StartDate, @EndDate, @HoursPerWeek, @Company, @Department, @DepartmentExternalId, @CostCenter, @ContractGuid)";
 
-            _sqliteDataAccessService.AddToDatabase(query, persons);
+            _sqliteDataAccessService.CreateRecordInDatabase(query, persons);
         }
 
         public void SaveDepartmentsToDatabase(List<DepartmentModel> departments)
@@ -111,7 +111,7 @@ namespace PSStuntman.Cmdlets
             var query = "insert into Departments (ExternalId, DisplayName, ManagerExternalId) " +
             "values (@ExternalId, @DisplayName, @ManagerExternalId)";
 
-            _sqliteDataAccessService.AddToDatabase(query, departments);
+            _sqliteDataAccessService.CreateRecordInDatabase(query, departments);
         }
     }
 }
