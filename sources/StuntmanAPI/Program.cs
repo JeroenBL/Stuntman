@@ -24,16 +24,30 @@ await WebHost.CreateDefaultBuilder()
                 return c.Response.WriteAsJsonAsync("Stuntman API");
             });
 
-            e.MapGet("/stuntman", c =>
+            e.MapGet("/stuntman", async c =>
             {
                 c.Response.ContentType = "application/json";
-                return c.Response.WriteAsJsonAsync(dataAccessService.GetStuntman());
+                await c.Response.WriteAsJsonAsync(await dataAccessService.GetStuntman().ConfigureAwait(false));
             });
 
-            e.MapGet("/departments", c =>
+            e.MapGet("/stuntman/{id:int}", async c =>
             {
                 c.Response.ContentType = "application/json";
-                return c.Response.WriteAsJsonAsync(dataAccessService.GetDepartments());
+                var id = int.Parse((string)(c.Request.RouteValues["id"]));
+                await c.Response.WriteAsJsonAsync(await dataAccessService.GetStuntmanById(id).ConfigureAwait(false));
+            });
+
+            e.MapGet("/departments", async c =>
+            {
+                c.Response.ContentType = "application/json";
+                await c.Response.WriteAsJsonAsync(await dataAccessService.GetDepartments().ConfigureAwait(false));
+            });
+
+            e.MapGet("/departments/{id:int}", async c =>
+            {
+                c.Response.ContentType = "application/json";
+                var id = int.Parse((string)(c.Request.RouteValues["id"]));
+                await c.Response.WriteAsJsonAsync(await dataAccessService.GetDepartmentById(id).ConfigureAwait(false));
             });
         });
     }).Build().RunAsync();

@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace PSStuntman.Services
 {
@@ -25,14 +26,14 @@ namespace PSStuntman.Services
             _connection.Open();
         }
 
-        public List<GenericModel> ReadFromDatabase<GenericModel>(string query)
+        public async Task<List<GenericModel>> GetRecordFromDatabase<GenericModel>(string query)
         {
-            var output = _connection.Query<GenericModel>(query, new DynamicParameters());
+            var output = await _connection.QueryAsync<GenericModel>(query, new DynamicParameters()).ConfigureAwait(false);
             _connection.Close();
             return output.ToList();
         }
 
-        public void AddToDatabase(string query, object obj)
+        public void CreateRecordInDatabase(string query, object obj)
         {
             _connection.Execute(query, obj);
             _connection.Close();
