@@ -40,5 +40,7 @@ An installation script / package is currently not available. Installation can on
 
 The UI is -hopefully- self-explanatory. By default an empty database is provided. You can 'fill' the database from the application. (Settings -> Manage database). There you will find the option 'Fill database'. This will create both persons/contract and departments. The number of contracts created for each person can be specified in the appsettings.json. Default this value is set to a max. of 3.
 
+![UI](https://raw.githubusercontent.com/JeroenBL/Stuntman-Blazor/main/assets/app.png)
+
 ## RESTapi
 The application comes with an RESTapi. The RESTapi can be used to integrate the application with other systems.
