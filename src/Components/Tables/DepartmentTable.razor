@@ -1,0 +1,105 @@
+﻿@inject IDepartmentService _departmentService
+@inject ISnackbar _snackbar
+@inject IDialogService DialogService
+@inject NavigationManager _navigationManager
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick='(() => _navigationManager.NavigateTo("department/create"))'>Add department</MudButton>
+<MudDataGrid Items="@_departments" MultiSelection="true" Sortable="true" Filterable="true" QuickFilter="@_quickFilter" Hideable="true" Bordered="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Departments</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <Column T="DepartmentModel" Field="DisplayName" />
+        <Column T="DepartmentModel" Field="ExternalId" />
+        <Column T="DepartmentModel"> 
+            <CellTemplate>
+                @{
+                    var departmentId = @context.Item.Id;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => Edit(departmentId))">Edit</MudButton>
+            </CellTemplate>
+        </Column>
+        <Column T="DepartmentModel"> 
+            <CellTemplate>
+                @{
+                    var departmentId = @context.Item.Id;
+                    var displayName = @context.Item.DisplayName;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick='(async () => await Delete(departmentId, displayName))'>Delete</MudButton>
+            </CellTemplate>
+        </Column>        
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="DepartmentModel" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private List<DepartmentModel> _departments;
+
+    private string _searchString;
+
+    private bool _sortNameByLength;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDepartmentData();
+    }
+
+    // custom sort by name length
+    private Func<DepartmentModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.DisplayName.Length;
+        else
+            return x.DisplayName;
+    };
+
+    // quick filter - filter gobally across multiple columns with the same input
+    private Func<DepartmentModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.ExternalId.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.DisplayName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    private async Task Edit(int Id)
+    {
+        _navigationManager.NavigateTo($"/department/details/{Id}");
+    }
+
+    private async Task Delete(int Id, string displayName)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Page", "department");
+        parameters.Add("ContentText", "Do you really want to delete the record for this department? This process cannot be undone.");
+        parameters.Add("Id", Id);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<ConfirmationDialog>($"Delete record for: {displayName}", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            _snackbar.Add($"Department [{displayName}] has been deleted!", Severity.Success);
+            await LoadDepartmentData();
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+    
+    private async Task LoadDepartmentData()
+    {
+        _departments = await _departmentService.ListAllAsync();
+    }  
+}

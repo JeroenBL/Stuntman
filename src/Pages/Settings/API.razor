@@ -1,0 +1,51 @@
+﻿@page "/settings/api"
+
+@inject IJSRuntime _jsRuntime
+
+<MudGrid>
+    <MudItem>
+        <MudPaper Width="400px">
+            <MudForm>
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Stuntman</MudText>
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" VerticalAlign="true">
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Stuntman/get_api_Stuntman"))'>GET: (All stuntman)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Stuntman/get_api_Stuntman__id_"))'>GET: (Stuntman by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Stuntman/patch_api_Stuntman__id_"))'>PATCH: (Update stuntman by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Stuntman/post_api_Stuntman"))'>POST: (Create new stuntman)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Stuntman/delete_api_Stuntman__id_"))'>DELETE: (Delete stuntman by Id)</MudButton>
+                        </MudButtonGroup>
+                    </MudCardContent>
+                </MudCard>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="400px">
+            <MudForm>
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Contracts</MudText>
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" VerticalAlign="true">
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/get_api_Contract"))'>GET: (All contracts)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/get_api_Contract__id_"))'>GET: (Contract by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/patch_api_Contract__id_"))'>PATCH: (Update contract by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/post_api_Contract"))'>POST: (Create new contract)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/delete_api_Contract__id_"))'>DELETE: (Delete contract by Id)</MudButton>
+                        </MudButtonGroup>
+                    </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<br />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick='(() => NavigateTo("/swagger/index.html"))' Class="ml-auto">Swagger</MudButton>
+
+@{
+    async Task NavigateTo(string endpoint)
+    {
+        await _jsRuntime.InvokeAsync<object>("open", endpoint, "_blank");
+    }
+}

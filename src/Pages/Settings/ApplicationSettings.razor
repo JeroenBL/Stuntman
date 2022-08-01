@@ -1,0 +1,42 @@
+﻿@page "/settings/application"
+
+@inject IConfiguration _configuration
+
+<MudGrid>
+    <MudItem>
+         <MudPaper Width="900px">
+            <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h5">Settings</MudText>
+                <MudText Typo="Typo.body2">
+                    Settings can be modified in the appsettings.json  
+                </MudText>
+                <MudTextField @bind-Value="_connectionString" Label="ConnectionString" Variant="Variant.Outlined" Disabled="true" />
+                <br />
+                <MudTextField @bind-Value="_maxContracts" Label="MaxContracts" Variant="Variant.Outlined" Disabled="true" />
+                </MudCardContent>
+            </MudCard> 
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<br />
+<div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => Edit())" Class="ml-auto">Edit</MudButton>
+</div>
+
+@code {
+    private string _connectionString;
+    private int _maxContracts;
+
+    protected override void OnInitialized()
+    {
+        _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        _maxContracts = _configuration.GetValue<int>("MaxContracts");
+    }
+
+    private void Edit()
+    {
+        var fileName = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
+        System.Diagnostics.Process.Start("notepad.exe", fileName);
+    }
+}

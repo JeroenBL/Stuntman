@@ -1,0 +1,15 @@
+﻿global using Bogus;
+global using Microsoft.AspNetCore.JsonPatch;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Infrastructure;
+global using Microsoft.EntityFrameworkCore.Migrations;
+global using Microsoft.OpenApi.Models;
+global using MudBlazor;
+global using MudBlazor.Services;
+global using Stuntman.Web;
+global using Stuntman.Web.Data;
+global using Stuntman.Web.Data.Models;
+global using Stuntman.Web.Data.Services;
+global using Stuntman.Web.Data.Services.Interfaces;
+global using System.Reflection;

@@ -1,0 +1,85 @@
+﻿@page "/dashboard"
+
+@inject IStuntmanService _stuntmanService
+@inject IDepartmentService _departmentService
+@inject IContractService _contractService
+@inject NavigationManager _navigationManager
+
+<MudGrid>
+    <MudItem>
+        <img Src="/logo3.png" class="centerimg"/>
+        <br />
+        <MudPaper Width="940px">
+        </MudPaper>
+    </MudItem>  
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="300px" Height="300px"
+                InputData="@dataTotal" InputLabels="@dataTotalLabel">
+            </MudChart>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="300px" Height="300px"
+                InputData="@contractsTotal" InputLabels="@contractsTotalLabel">
+            </MudChart>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Bottom" Width="300px" Height="300px"
+                InputData="@departmentsTotal" InputLabels="@departmentsLabel">
+            </MudChart>
+        </MudPaper>
+    </MudItem>    
+</MudGrid>
+
+<style>
+    .centerimg {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 75%;
+    }
+</style>
+
+@code {
+    private List<StuntmanModel> _stuntman;
+    private List<DepartmentModel> _departments;
+    private List<ContractModel> _contracts;
+
+    private double[] dataTotal;
+    private string[] dataTotalLabel;
+
+    private double[] contractsTotal;
+    private string[] contractsTotalLabel;
+
+    private double[] departmentsTotal;
+    private string[] departmentsLabel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _stuntman = await _stuntmanService.ListAllAsync();
+        _departments = await _departmentService.ListAllAsync();
+        _contracts = await _contractService.ListAllAsync();
+
+        // Total stunman, departments and contracts
+        dataTotal = new double[] { _stuntman.Count(), _contracts.Count(), _departments.Count() };
+        dataTotalLabel = new string[] { $"Total stuntman {_stuntman.Count()}", $"Total contracts {_contracts.Count()}", $"Total departments {_departments.Count()}" };
+
+        // Active contracts and orphaned contracts
+        var allUserIds = _stuntman.Select(c => c.UserId).ToList();
+        var allContracts = _contracts.Where(c => allUserIds.Contains(c.UserId)).ToList();
+        var orphanedContracts = _contracts.Where(c => !allUserIds.Contains(c.UserId)).ToList();
+        contractsTotal = new double[] { allContracts.Count(), orphanedContracts.Count() };
+        contractsTotalLabel = new string[] { $"Contracts with stuntman {allContracts.Count()}", $"Orphaned contracts {orphanedContracts.Count()}" };
+
+        // Departments with manager and orphaned departments
+        var allUserExternalIds = _stuntman.Select(c => c.ExternalId).ToList();
+        var allDepartments = _departments.Where(c => allUserExternalIds.Contains(c.ManagerExternalId)).ToList();
+        var orphanedDepartments = _departments.Where(d => d.ManagerExternalId == string.Empty).ToList();
+        departmentsTotal = new double[] { allDepartments.Count(), orphanedContracts.Count() };
+        departmentsLabel = new string[] { $"Departments with manager {allDepartments.Count()}", $"Orphaned departments {orphanedDepartments.Count()}" };
+    }
+}

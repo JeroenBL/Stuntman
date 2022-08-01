@@ -1,0 +1,60 @@
+﻿@page "/contract/details/{Id:int}"
+@page "/contract/create"
+@page "/contract/create/{UserId:int}"
+
+@inject IContractService _contractService
+@inject IDepartmentService _departmentService
+@inject IStuntmanService _stuntmanService
+@inject ISnackbar _snackbar
+@inject IJSRuntime _jsRuntime;
+@inject NavigationManager _navigationManager
+
+<MudGrid>
+    <MudItem>
+        @if (Id != null)
+        {
+             <MudText Typo="Typo.h4">Update contract</MudText>
+        }
+        else 
+        {
+             <MudText Typo="Typo.h4">Create contract</MudText>
+        }
+        <br />         
+        <MudPaper Width="600px">
+            <MudForm Model="@_contract">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Employment information</MudText>
+                        @if (UserId != null)
+                        {
+                            <MudTextField @bind-Value="@UserId" HelperText="UserId" Variant="Variant.Text"></MudTextField>
+                        }
+                        else
+                        {
+                            <MudTextField @bind-Value="@_contract.UserId" HelperText="UserId" Variant="Variant.Text"></MudTextField>
+                        }
+                        <br />
+                        <MudAutocomplete T="string" Label="Department" @bind-Value="@_contract.Department" SearchFunc="@SearchDepartment" MaxItems="null"/>
+                        <MudTextField @bind-Value="@_contract.Title" HelperText="Title" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_contract.HoursPerWeek" HelperText="Hours" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_contract.StartDate" HelperText="StartDate" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_contract.EndDate" HelperText="EndDate" Variant="Variant.Text"></MudTextField>
+                        <br />
+                        @{
+                            if (_contract.IsManager == 1)
+                            {
+                                _isManager = true;
+                            }
+                        }
+                        <MudSwitch @bind-Checked="@_isManager" Color="Color.Primary" Label="Manager"/>
+                    </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem>  
+</MudGrid>
+<br />
+<div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Class="ml-auto">Save</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick='(() => NavigateBack())' Class="ml-auto">Close</MudButton>
+</div>

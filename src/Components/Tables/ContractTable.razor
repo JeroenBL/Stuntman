@@ -1,0 +1,109 @@
+﻿@inject IContractService _contractService
+@inject ISnackbar _snackbar
+@inject IDialogService DialogService
+@inject NavigationManager _navigationManager
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick='(() => _navigationManager.NavigateTo("contract/create"))'>Add contract</MudButton>
+<MudDataGrid Items="@_contracts" MultiSelection="true" Sortable="true" Filterable="true" QuickFilter="@_quickFilter" Hideable="true" Bordered="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Contracts</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <Column T="ContractModel" Field="UserExternalId" />
+        <Column T="ContractModel" Field="Title" />
+        <Column T="ContractModel" Field="Department" />
+        <Column T="ContractModel"> 
+            <CellTemplate>
+                @{
+                    var contractId = @context.Item.Id;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick='(() => Edit(contractId))'>Edit</MudButton>
+            </CellTemplate>
+        </Column>
+        <Column T="ContractModel"> 
+            <CellTemplate>
+                @{
+                    var contractId = @context.Item.Id;
+                    var externalId = @context.Item.UserExternalId;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick='(async () => await Delete(contractId, externalId))'>Delete</MudButton>
+            </CellTemplate>
+        </Column>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="ContractModel" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private List<ContractModel> _contracts;
+
+    private string _searchString;
+
+    private bool _sortNameByLength;
+
+    protected override async Task OnInitializedAsync()
+    {
+       await LoadContractData();
+    }
+
+    // custom sort by name length
+    private Func<ContractModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.Title.Length;
+        else
+            return x.Title;
+    };
+
+    // quick filter - filter gobally across multiple columns with the same input
+    private Func<ContractModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.UserExternalId.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;            
+
+        if (x.Title.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Department.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+    
+    private void Edit(int Id)
+    {
+        _navigationManager.NavigateTo($"/contract/details/{Id}");
+    }
+
+    private async Task Delete(int Id, string externalId)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Page", "contract");
+        parameters.Add("ContentText", "Do you really want to delete the contract record for this stuntman? This process cannot be undone.");
+        parameters.Add("Id", Id);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<ConfirmationDialog>($"Delete record for: {externalId}", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            _snackbar.Add($"Contract [{externalId}] has been deleted!", Severity.Success);
+            await LoadContractData();
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async Task LoadContractData()
+    {
+        _contracts = await _contractService.ListAllAsync();
+    } 
+}

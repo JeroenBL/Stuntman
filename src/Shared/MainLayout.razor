@@ -1,0 +1,96 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager _navigationManager
+
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="MyCustomTheme"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Primary" aria-label="github" OnClick='@(() => _navigationManager.NavigateTo("https://github.com/JeroenBL/Stuntman"))'></MudIconButton>
+        <MudToggleIconButton @bind-Toggled="@_isDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="@Color.Primary"
+            ToggledIcon="@Icons.Material.Filled.DarkMode" ToggledColor="@Color.Success" ToggledTitle="On">
+        </MudToggleIconButton>
+        <span> Turn @(_isDarkMode ? "on" : "off") the light</span>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+        @Body
+        </MudContainer>
+        <footer>
+            <MudText Typo="Typo.subtitle2" Align="Align.Center">
+                Created by Jeroen Blaauw <br />
+                Version: @_version
+            </MudText>
+            <br />
+        </footer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _theme = new();
+    private MudThemeProvider _mudThemeProvider;
+    private bool _isDarkMode;
+    private List<BreadcrumbItem> _breadcrumbItems = new List<BreadcrumbItem>();
+    private Version _version;
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Blue.Darken1,
+            Secondary = Colors.BlueGrey.Darken1,
+            Warning = Colors.Red.Darken1,
+            AppbarBackground = Colors.Indigo.Darken1,
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    };
+
+    //protected override async Task OnParametersSetAsync()
+    //{
+    //    BreadcrumbItem item = new BreadcrumbItem("Home", _navigationManager.BaseUri);
+    //    _breadcrumbItems.Add(item);
+
+    //    var currentUrl = _navigationManager.Uri;
+    //    var myUrl = currentUrl.Replace(_navigationManager.BaseUri, "");
+    //    var name = _navigationManager.Uri.Split('/').Last();
+    //    var path = myUrl.Split('/');
+    //    var count = 1;
+        
+    //    foreach (var link in path)
+    //    {
+    //        if (link == "") continue;
+    //        count++;
+    //        var lastLink = _navigationManager.Uri.Last();
+    //        BreadcrumbItem newItem = new BreadcrumbItem(link, _navigationManager.BaseUri);
+    //        _breadcrumbItems.Add(newItem);
+    //    }
+    //}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _version = typeof(Program).Assembly.GetName().Version;
+        if (firstRender)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            StateHasChanged();
+        }
+    }
+}

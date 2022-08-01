@@ -1,0 +1,32 @@
+﻿@page "/settings/extensions"
+
+@inject NavigationManager _navigationManager
+
+<MudGrid>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">VSCode extension</MudText>
+                    <MudText Typo="Typo.body2">
+                        The VScode extension can be used to import stuntman (as PowerShell code snippet) directly into your project.
+                    </MudText>
+                    <MudIconButton Icon="@Icons.Custom.Brands.MicrosoftVisualStudio" Color="Color.Primary" OnClick='@(() => _navigationManager.NavigateTo("https://github.com/JeroenBL/stuntman"))'></MudIconButton>
+                </MudCardContent>
+            </MudCard> 
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">HelloID Connector</MudText>
+                    <MudText Typo="Typo.body2">
+                        The HelloID connector uses the API to import stuntman, contracts and departments into provisioning
+                    </MudText>
+                    <MudIconButton Icon="@Icons.Custom.Uncategorized.Folder"  Color="Color.Primary" OnClick='@(() => _navigationManager.NavigateTo("https://github.com/JeroenBL/HIDStuntman"))'></MudIconButton>
+                </MudCardContent>
+            </MudCard> 
+        </MudPaper>
+    </MudItem>
+</MudGrid>

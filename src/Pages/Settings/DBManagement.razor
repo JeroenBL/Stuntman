@@ -1,0 +1,146 @@
+﻿@page "/settings/db"
+
+@inject IStuntmanService _stuntmanService
+@inject IContractService _contractService
+@inject IDepartmentService _departmentService
+@inject ISnackbar _snackbar
+@inject IDialogService DialogService
+@inject IConfiguration _configuration
+@inject NavigationManager _navigationManager
+@inject StuntmanSampleService _sampleService
+
+<MudGrid>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudForm>
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Fill database</MudText>
+                        <MudText Typo="Typo.body2">
+                            Enter the amount of stuntman you wish to create. The default 'locale' is set to 'nl'.
+                            The amount of contracts that will be created is specfied in the appsettings.json.
+                        </MudText>
+                        <br />
+                        <MudText Typo="Typo.body2">
+                            Departments are automatically generated based on the contract information.
+                        </MudText>
+                        <MudTextField @bind-Value="@_amount" HelperText="Amount" Variant="Variant.Text"></MudTextField>
+                        <br />
+                        <MudAutocomplete T="string" Label="Locale" @bind-Value="@_locale" SearchFunc="@SearchLanguage" MaxItems="null"/>
+                     </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem> 
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">Empty database</MudText>
+                    <MudText Typo="Typo.body2">This will remove all records from the database and cannot be undone.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick='(async () => await Delete())'>Empty database</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudPaper>
+    </MudItem>    
+</MudGrid>
+
+<br />
+<div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => Create())" Class="ml-auto">Fill database</MudButton>
+    <MudProgressLinear Color="Color.Secondary" Value="@_value" Class="my-7" />
+</div>
+
+@code {
+    private int _amount;
+
+    private string _locale;
+
+    private string[] _languages =
+    {
+        "af_ZA", "ar", "az", "cz",
+        "de", "de_AT", "de_CH", "el",
+        "en", "en_AU", "en_AU-ocker",
+        "en_BORK", "en_CA", "en_GB", "en_IE", "en_IND",
+        "en_NG", "en_ZA", "es", "es_MX", "fa",
+        "fi", "fr", "fr_CA", "fr_CH",
+        "ge", "hr", "id_ID", "it",
+        "ja", "ko", "lv", "nb_NO",
+        "ne", "nl", "nl_BE", "pl",
+        "pl_BR", "pl_PT", "ro", "ru",
+        "sk", "sv", "tr", "uk", "vi",
+        "zh_CN", "zh_TW", "zu_ZA",
+    };
+
+    private int _value { get; set; }
+
+    private async Task<IEnumerable<string>> SearchLanguage(string value)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return _languages;
+        return _languages.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task Delete()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Page", "db");
+        parameters.Add("ContentText", "Do you really want to delete all record from the database? This process cannot be undone.");
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<ConfirmationDialog>($"Delete all records from database", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            _snackbar.Add("Database has been emptied!", Severity.Success);
+        }
+        StateHasChanged();
+    }
+
+    private async Task Create()
+    {   
+        await InvokeAsync(() => FillDataBase());
+    }
+
+    private async Task FillDataBase()
+    {
+        _value = 0;
+        do
+        {
+            var stuntman = _sampleService.CreateStuntman(_amount, _locale);
+            if (stuntman.Count > 0)
+            {
+                foreach (var person in stuntman)
+                {
+                    await _stuntmanService.CreateAsync(person);
+                    var maxContracts = _configuration.GetValue<int>("MaxContracts");
+                    var contracts = _sampleService.CreateContract(_locale, person.UserId, maxContracts);
+                    _value = 30;
+                    StateHasChanged();
+                    foreach (var contract in contracts)
+                    {
+                        await _contractService.CreateAsync(contract);
+                        _value = 60;
+                        StateHasChanged();
+                    }
+                }
+            }
+            var allContracts = await _contractService.ListAllAsync();
+            var departments = _sampleService.CreateDepartmentsAndAssignManager(allContracts);
+            foreach (var department in departments)
+            {
+                await _departmentService.CreateAsync(department);
+            }
+            _value = 100;
+             StateHasChanged();
+        } while (_value < 100);
+    }
+}

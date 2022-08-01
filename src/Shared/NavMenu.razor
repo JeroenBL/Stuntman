@@ -1,0 +1,29 @@
+﻿<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
+    <MudNavMenu Class="mud-width-full">
+        <img Src="/logo.png" class="center"/>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+        
+        <MudNavGroup Title="User mangement" Icon="@Icons.Filled.ManageAccounts" Expanded="true">
+            <MudNavLink Href="/stuntman" Icon="@Icons.Filled.Group">Stuntman</MudNavLink>
+            <MudNavLink Href="/contracts" Icon="@Icons.Filled.Assignment">Contracts</MudNavLink>
+            <MudNavLink Href="/departments" Icon="@Icons.Filled.Business">Departments</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Settings" Icon="@Icons.Filled.AdminPanelSettings" Expanded="true">
+            <MudNavLink Href="/settings/application" Icon="@Icons.Filled.Settings">Application settings</MudNavLink>
+            <MudNavLink Href="/settings/db" Icon="@Icons.Filled.DataObject">Manage database</MudNavLink>
+            <MudNavLink Href="/settings/api" Icon="@Icons.Filled.Api">API</MudNavLink>
+                        <MudNavLink Href="/settings/extensions" Icon="@Icons.Filled.Extension">Extensions</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/settings/helpcenter" Icon="@Icons.Filled.HelpCenter">Help center</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 30%;
+    }
+</style>

@@ -1,0 +1,134 @@
+﻿@page "/stuntman/details/{Id:int}"
+@page "/stuntman/create"
+
+@inject IStuntmanService _stuntmanService
+@inject IContractService _contractService
+@inject ISnackbar _snackbar
+@inject IJSRuntime _jsRuntime;
+@inject IDialogService DialogService
+@inject NavigationManager _navigationManager
+
+<div>
+@{
+    if (Id != null)
+    {
+        <MudAvatar Size="Size.Large" Color="Color.Primary">@_stuntman.Initials</MudAvatar>
+    }
+}
+</div>
+<br />
+<MudGrid>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudForm Model="@_stuntman">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Personal</MudText>
+                        <MudTextField @bind-Value="@_givenName" HelperText="GivenName" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_familyName" HelperText="FamilyName" Variant="Variant.Text"></MudTextField>
+                        @{
+                            if (!string.IsNullOrEmpty(_givenName) && !string.IsNullOrEmpty(_familyName))
+                            {
+                                _initials = $"{_givenName.Substring(0, 1)}.{_familyName.Substring(0,1)}";
+                                _businessEmail = $"{_givenName.Substring(0, 1)}.{_familyName}@{_company}.com";
+                            }
+                        }
+                        <MudTextField @bind-Value="@_initials" HelperText="Initials" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.BirthDate" HelperText="BirthDate" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.BirthPlace" HelperText="BirthPlace" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.PersonalEmailAddress" HelperText="Email" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.PersonalPhoneNumber" HelperText="PhoneNumber" Variant="Variant.Text"></MudTextField>
+                    </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="300px">
+            <MudForm Model="@_stuntman">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Address</MudText>
+                        <MudTextField @bind-Value="@_stuntman.Street" HelperText="Street" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.HouseNumber" HelperText="HouseNumber" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.ZipCode" HelperText="ZipCode" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.City" HelperText="City" Variant="Variant.Text"></MudTextField>
+                    </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="350px">
+            <MudForm Model="@_stuntman">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Business</MudText>
+                        <MudTextField @bind-Value="@_businessEmail" HelperText="BusinessEmail" Variant="Variant.Text"></MudTextField>
+                        <MudTextField @bind-Value="@_stuntman.BusinessPhoneNumber" HelperText="BusinessPhone" Variant="Variant.Text"></MudTextField>
+                        <br />
+                        <MudAutocomplete T="string" Label="Company" @bind-Value="@_company" SearchFunc="@SearchCompany" MaxItems="null"/>
+                        <MudAutocomplete T="string" Label="Language" @bind-Value="@_stuntman.Language" SearchFunc="@SearchLanguage" MaxItems="null"/>
+                        <br />
+                        @{
+                            if (_stuntman.IsActive == 1)
+                            {
+                                _isActive = true;
+                            }
+                        }
+                        <MudSwitch @bind-Checked="@_isActive" Color="Color.Primary" Label="Active"/>
+                        <br />
+                        <br />
+                        <MudText Typo="Typo.h6">Contracts</MudText>
+                         @{
+                            var userId = _stuntman.UserId;
+                        }
+                        @if (Id != null)
+                        {
+                            <MudButton Variant="Variant.Filled" Disabled="false" Color="Color.Primary" OnClick='(() => _navigationManager.NavigateTo($"contract/create/{userId}"))'>Add contract</MudButton>
+                            <br />
+@*                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Text" VerticalAlign="true">
+                            @if (_contracts != null){
+                                foreach (var contract in _contracts)
+                                {
+                                    <MudButton @onclick='(() => _navigationManager.NavigateTo($"/contract/details/{contract.Id}"))'>@contract.Id</MudButton><MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick='(async () => await Delete(Id))'>Delete</MudButton>
+                                }
+                            }
+                            else
+                            {
+                                <p>No contracts are currently available ...</p>
+                            }
+                            </MudButtonGroup>*@
+                            <MudDataGrid Items="@_contracts">
+                                <Columns>
+                                    <Column T="ContractModel" Field="Id" HideSmall="true" /> 
+                                    <Column T="ContractModel"> 
+                                        <CellTemplate>
+                                            @{
+                                                var contractId = @context.Item.Id;
+                                            }
+                                            <MudButton Variant="Variant.Filled" Color="Color.Primary"  @onclick='(() => _navigationManager.NavigateTo($"/contract/details/{contractId}"))'>Edit</MudButton>
+                                        </CellTemplate>
+                                    </Column>
+                                    <Column T="ContractModel"> 
+                                        <CellTemplate>
+                                            @{
+                                                var contractId = @context.Item.Id;
+                                            }
+                                            <MudButton Variant="Variant.Filled" Color="Color.Warning"  @onclick='(() => Delete(contractId))'>Delete</MudButton>
+                                        </CellTemplate>
+                                    </Column>
+                                </Columns>
+                            </MudDataGrid>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<br />
+<div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Class="ml-auto">Save</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick='(() => NavigateBack())' Class="ml-auto">Close</MudButton>
+</div>

@@ -1,0 +1,40 @@
+﻿@page "/department/details/{Id:int}"
+@page "/department/create"
+
+@inject IContractService _contractService
+@inject IDepartmentService _departmentService
+@inject ISnackbar _snackbar
+@inject IJSRuntime _jsRuntime;
+@inject NavigationManager _navigationManager
+
+<MudGrid>
+    <MudItem>
+        @if (Id != null)
+        {
+             <MudText Typo="Typo.h4">Update department</MudText>
+        }
+        else 
+        {
+             <MudText Typo="Typo.h4">Create department</MudText>
+        }
+        <br />
+        <MudPaper Width="300px">
+            <MudForm Model="@_department">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Department information</MudText>
+                        <MudTextField @bind-Value="@_department.DisplayName" HelperText="DisplayName" Variant="Variant.Text"></MudTextField>
+                        <br />
+                        <MudAutocomplete T="string" Label="ManagerExternalId" Value="@_department.ManagerExternalId" SearchFunc="@SearchMember" MaxItems="null"/>
+                        <MudAutocomplete T="string" Label="Members" Text="..." SearchFunc="@SearchMember" MaxItems="null"/>
+                     </MudCardContent>
+                </MudCard> 
+            </MudForm>           
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<br />
+<div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Class="ml-auto">Save</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick='(() => NavigateBack())' Class="ml-auto">Close</MudButton>
+</div>

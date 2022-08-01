@@ -1,0 +1,118 @@
+﻿@inject IStuntmanService _stuntmanService
+@inject ISnackbar _snackbar
+@inject IDialogService DialogService
+@inject NavigationManager _navigationManager
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick='(() => _navigationManager.NavigateTo("stuntman/create"))'>Add stuntman</MudButton>
+<MudDataGrid Items="@_persons" MultiSelection="true" Sortable="true" Filterable="true" QuickFilter="@_quickFilter" Hideable="true" Bordered="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Stuntman</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <Column T="StuntmanModel">
+            <CellTemplate>
+                <MudAvatar Color="Color.Primary">@context.Item.Initials</MudAvatar>
+            </CellTemplate>
+        </Column>
+        <Column T="StuntmanModel" Field="UserId" />
+        <Column T="StuntmanModel" Field="ExternalId" />
+        <Column T="StuntmanModel" Field="DisplayName" />
+        <Column T="StuntmanModel" Field="Company" />
+        <Column T="StuntmanModel"> 
+            <CellTemplate>
+                @{
+                    var stuntmanId = @context.Item.Id;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => Edit(stuntmanId))">Edit</MudButton>
+            </CellTemplate>
+        </Column>
+        <Column T="StuntmanModel"> 
+            <CellTemplate>
+                @{
+                    var stuntmanId = @context.Item.Id;
+                    var displayName = @context.Item.DisplayName;
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick='(async () => await Delete(stuntmanId, displayName))'>Delete</MudButton>
+            </CellTemplate>
+        </Column>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="StuntmanModel" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private List<StuntmanModel> _persons;
+
+    private string _searchString;
+
+    private bool _sortNameByLength;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPersonData();
+    }
+
+    // custom sort by name length
+    private Func<StuntmanModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.DisplayName.Length;
+        else
+            return x.DisplayName;
+    };
+
+    // quick filter - filter gobally across multiple columns with the same input
+    private Func<StuntmanModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.UserId.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.ExternalId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.DisplayName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Company.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    private void Edit(int Id)
+    {
+        _navigationManager.NavigateTo($"/stuntman/details/{Id}");
+    }
+
+    private async Task Delete(int Id, string displayName)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Page", "stuntman");
+        parameters.Add("ContentText", "Do you really want to delete the record for this stuntman? This process cannot be undone.");
+        parameters.Add("Id", Id);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = DialogService.Show<ConfirmationDialog>($"Delete record for: {displayName}", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            _snackbar.Add($"Stuntman [{displayName}] has been deleted!", Severity.Success);
+            await LoadPersonData();
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    private async Task LoadPersonData()
+    {
+        _persons = await _stuntmanService.ListAllAsync();
+    }   
+}

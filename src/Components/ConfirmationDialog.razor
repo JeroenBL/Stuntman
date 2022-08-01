@@ -1,0 +1,55 @@
+﻿@using Stuntman.Web.Data.Services
+
+@inject IStuntmanService _stuntmanService
+@inject IDepartmentService _departmentService
+@inject IContractService _contractService
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        @ContentText
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="(async () => await Delete())">Delete</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Page { get; set; }
+
+    [Parameter] 
+    public string ContentText { get; set; }
+
+    [Parameter] 
+    public int Id { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task Delete()
+    {
+        if (Page == "stuntman")
+        {
+            await _stuntmanService.DeleteAsync(Id);
+        }
+        else if (Page == "department")
+        {
+            await _departmentService.DeleteAsync(Id);
+        }
+        else if (Page == "contract")
+        {
+            await _contractService.DeleteAsync(Id);
+        }
+        else if (Page == "db")
+        {
+            await _stuntmanService.DeleteAllAsync();
+            await _contractService.DeleteAllAsync();
+            await _departmentService.DeleteAllAsync();
+        }
+        MudDialog.Close();
+    }
+}
