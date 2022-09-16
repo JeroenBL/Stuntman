@@ -1,4 +1,6 @@
 ﻿@inject IStuntmanService _stuntmanService
+@inject IContractService _contractService
+@inject IDepartmentService _departmentService
 @inject ISnackbar _snackbar
 @inject IDialogService DialogService
 @inject NavigationManager _navigationManager
@@ -93,6 +95,23 @@
 
     private async Task Delete(int Id, string displayName)
     {
+        var person = _stuntmanService.GetAsync(Id).GetAwaiter().GetResult();
+        var contracts = _contractService.ListAllAsync().GetAwaiter().GetResult().Where(c => c.UserId == person.UserId).OrderByDescending(c => c.HoursPerWeek).ToList();
+        foreach (var contract in contracts)
+        {
+            if (contract.IsManager == 1)
+            {
+                var departments = _departmentService.ListAllAsync().GetAwaiter().GetResult().Where(d => d.ManagerExternalId == contract.UserExternalId).ToList();
+                foreach (var department in departments)
+                {
+                    department.ManagerExternalId = null;
+                    await _departmentService.UpdateAsync(department);
+                }
+            }
+
+            await _contractService.DeleteAsync(contract.Id);
+        }
+
         var parameters = new DialogParameters();
         parameters.Add("Page", "stuntman");
         parameters.Add("ContentText", "Do you really want to delete the record for this stuntman? This process cannot be undone.");

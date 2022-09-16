@@ -18,7 +18,7 @@ namespace Stuntman.Web.Components.Forms
 
         private string[] _managerExternalIds;
 
-        private string[] _departmentConnectedContractsExternalds;
+        private List<ContractModel> _departmentConnectedContractsExternalds;
 
         protected override async Task OnParametersSetAsync()
         {
@@ -43,7 +43,12 @@ namespace Stuntman.Web.Components.Forms
                     departmentConnectedContracts.Add(contract);
                 }
 
-                _departmentConnectedContractsExternalds = departmentConnectedContracts.Select(c => c.UserExternalId).Distinct().ToArray();
+               var departmentConnectedContractsExternalds = departmentConnectedContracts
+                    .Select(c => new { c.UserExternalId, c.Id})
+                    .Distinct()
+                    .ToList();
+
+                _departmentConnectedContractsExternalds = departmentConnectedContracts;
             }
         }
 
@@ -74,11 +79,6 @@ namespace Stuntman.Web.Components.Forms
         private async Task<IEnumerable<string>> SearchManager(string value)
         {
             return _managerExternalIds.Search(value);
-        }
-
-        private async Task<IEnumerable<string>> SearchMember(string value)
-        {
-            return _departmentConnectedContractsExternalds.Search(value);
         }
 
         private async void NavigateBack()

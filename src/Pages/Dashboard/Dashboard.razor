@@ -73,13 +73,11 @@
         var allContracts = _contracts.Where(c => allUserIds.Contains(c.UserId)).ToList();
         var orphanedContracts = _contracts.Where(c => !allUserIds.Contains(c.UserId)).ToList();
         contractsTotal = new double[] { allContracts.Count(), orphanedContracts.Count() };
-        contractsTotalLabel = new string[] { $"Contracts with stuntman {allContracts.Count()}", $"Orphaned contracts {orphanedContracts.Count()}" };
+        contractsTotalLabel = new string[] { $"Contracts with stuntman {allContracts.Count()}", $"Orphaned contracts {orphanedContracts.Count()}"};
 
         // Departments with manager and orphaned departments
-        var allUserExternalIds = _stuntman.Select(c => c.ExternalId).ToList();
-        var allDepartments = _departments.Where(c => allUserExternalIds.Contains(c.ManagerExternalId)).ToList();
-        var orphanedDepartments = _departments.Where(d => d.ManagerExternalId == string.Empty).ToList();
-        departmentsTotal = new double[] { allDepartments.Count(), orphanedContracts.Count() };
-        departmentsLabel = new string[] { $"Departments with manager {allDepartments.Count()}", $"Orphaned departments {orphanedDepartments.Count()}" };
+        var orphanedDepartments = _departments.Where(d => d.ManagerExternalId == null).ToList();
+        departmentsTotal = new double[] { _departments.Count(), orphanedContracts.Count() };
+        departmentsLabel = new string[] { $"Total departments {_departments.Count()}", $"Orphaned departments {orphanedDepartments.Count()}"};
     }
 }

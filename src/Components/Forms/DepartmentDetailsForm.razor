@@ -17,7 +17,6 @@
         {
              <MudText Typo="Typo.h4">Create department</MudText>
         }
-        <br />
         <MudPaper Width="300px">
             <MudForm Model="@_department">
                 <MudCard>       
@@ -25,11 +24,32 @@
                         <MudText Typo="Typo.h5">Department information</MudText>
                         <MudTextField @bind-Value="@_department.DisplayName" HelperText="DisplayName" Variant="Variant.Text"></MudTextField>
                         <br />
-                        <MudAutocomplete T="string" Label="ManagerExternalId" Value="@_department.ManagerExternalId" SearchFunc="@SearchMember" MaxItems="null"/>
-                        <MudAutocomplete T="string" Label="Members" Text="..." SearchFunc="@SearchMember" MaxItems="null"/>
+                        <MudAutocomplete T="string" Label="ManagerExternalId" Value="@_department.ManagerExternalId" SearchFunc="@SearchManager" MaxItems="null"/>
                      </MudCardContent>
                 </MudCard> 
-            </MudForm>           
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <br />
+        <br />
+        <MudPaper Width="300px">
+            <MudForm Model="@_department">
+                <MudCard>       
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Members</MudText>
+                        <br />
+                            <MudList Clickable="true">
+                            @if (Id != null) {
+                                foreach (var item in _departmentConnectedContractsExternalds)
+                                {
+                                    <MudListItem Text=@item.UserExternalId Icon="@Icons.Material.Filled.Assignment" OnClick='(() => _navigationManager.NavigateTo($"/contract/details/{item.Id}"))'/>
+                                }
+                            }
+                            </MudList>
+                     </MudCardContent>
+                </MudCard> 
+            </MudForm>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -38,3 +58,4 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Class="ml-auto">Save</MudButton>
     <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick='(() => NavigateBack())' Class="ml-auto">Close</MudButton>
 </div>
+
