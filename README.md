@@ -1,5 +1,7 @@
 # Stuntman
 
+![logo](https://raw.githubusercontent.com/JeroenBL/Stuntman/main/assets/logo.png)
+
 > Because every app needs one
 
 Stuntman is a blazor web application that you can use to create, well, stuntman.
@@ -61,7 +63,7 @@ To install the web application:
 
 ### UI
 
-![ui](.\assets\3-ui.png)
+![ui](https://raw.githubusercontent.com/JeroenBL/Stuntman/main/assets/3-ui.png)
 
 ### Database
 
@@ -86,7 +88,7 @@ To generate new data:
 3. Select a _locale_.
 4. Click `Fill database` to generate the data.
 
-![newdata](./assets/1-add-data.png)
+![newdata](https://raw.githubusercontent.com/JeroenBL/Stuntman/main/assets/1-add-data.png)
 
 ### API
 
