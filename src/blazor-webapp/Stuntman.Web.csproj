@@ -5,6 +5,7 @@
 	  <Nullable>disable</Nullable>
 	  <ImplicitUsings>enable</ImplicitUsings>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
+	  <AssemblyVersion>1.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +34,12 @@
     <Content Update="wwwroot\downloads\stuntman-1.0.0.vsix">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Stuntman.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

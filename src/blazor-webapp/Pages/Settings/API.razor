@@ -4,7 +4,7 @@
 
 <MudGrid>
     <MudItem>
-        <MudPaper Width="400px">
+        <MudPaper Width="350px">
             <MudForm>
                 <MudCard>
                     <MudCardContent>
@@ -22,7 +22,25 @@
         </MudPaper>
     </MudItem>
     <MudItem>
-        <MudPaper Width="400px">
+        <MudPaper Width="350px">
+            <MudForm>
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">Departments</MudText>
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" VerticalAlign="true">
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Department/get_api_Department"))'>GET: (All departments)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Department/get_api_Department__id_"))'>GET: (department by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Department/patch_api_Department__id_"))'>PATCH: (Update department by Id)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Department/post_api_Department"))'>POST: (Create new department)</MudButton>
+                            <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Department/delete_api_Department__id_"))'>DELETE: (Delete department by Id)</MudButton>
+                        </MudButtonGroup>
+                    </MudCardContent>
+                </MudCard> 
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+    <MudItem>
+        <MudPaper Width="350px">
             <MudForm>
                 <MudCard>
                     <MudCardContent>
@@ -35,7 +53,7 @@
                             <MudButton OnClick='@(() => NavigateTo("/swagger/index.html#/Contract/delete_api_Contract__id_"))'>DELETE: (Delete contract by Id)</MudButton>
                         </MudButtonGroup>
                     </MudCardContent>
-                </MudCard> 
+                </MudCard>
             </MudForm>
         </MudPaper>
     </MudItem>
